@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Innovexa - Smart Road Energy Harvesting</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#070a0d;
+    color:#e9eef2;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    height:70px;
+    background:#0c1116;
+    border-bottom:1px solid #29323a;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 28px;
+}
+
+.logo{
+    font-size:21px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.logo span{
+    color:#ffae22;
+}
+
+.system-status{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:#7f8d96;
+    font-size:12px;
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#626a70;
+}
+
+.active-status .status-dot{
+    background:#25e68b;
+    box-shadow:0 0 12px #25e68b;
+}
+
+.active-status{
+    color:#35e99a;
+}
+
+/* ================= LAYOUT ================= */
+
+.container{
+    display:grid;
+    grid-template-columns:minmax(700px,1fr) 320px;
+    gap:16px;
+    padding:16px;
+}
+
+/* ================= SIMULATION ================= */
+
+.simulation{
+    background:#0c1115;
+    border:1px solid #29323a;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.sim-title{
+    padding:15px 18px;
+    border-bottom:1px solid #29323a;
+}
+
+.sim-title h2{
+    margin:0;
+    font-size:18px;
+}
+
+.sim-title p{
+    margin:6px 0 0;
+    font-size:11px;
+    color:#7e8b94;
+}
+
+/* ================= SCENE ================= */
+
+.scene{
+    position:relative;
+    height:650px;
+    overflow:hidden;
+    background:
+        linear-gradient(
+            to bottom,
+            #222c34 0px,
+            #303b43 150px,
+            #1e2326 150px,
+            #1e2326 330px,
+            #1b120c 330px,
+            #100a07 100%
+        );
+}
+
+/* distant background */
+
+.background-building{
+    position:absolute;
+    bottom:320px;
+    width:100px;
+    height:80px;
+    background:#20272c;
+    opacity:.6;
+}
+
+.b1{left:60px;}
+.b2{left:180px;height:120px;}
+.b3{right:180px;height:100px;}
+.b4{right:40px;height:70px;}
+
+/* ================= STREETLIGHTS ================= */
+
+.streetlight{
+    position:absolute;
+    top:65px;
+    width:8px;
+    height:265px;
+    background:linear-gradient(
+        90deg,
+        #24282b,
+        #6c7377,
+        #24282b
+    );
+    z-index:3;
+}
+
+.streetlight.left{
+    left:13%;
+}
+
+.streetlight.right{
+    right:13%;
+}
+
+.streetlight-head{
+    position:absolute;
+    top:-5px;
+    left:-18px;
+    width:45px;
+    height:16px;
+    border-radius:12px 12px 4px 4px;
+    background:#555d61;
+}
+
+.streetlight-lamp{
+    position:absolute;
+    top:6px;
+    left:-8px;
+    width:24px;
+    height:12px;
+    border-radius:50%;
+    background:#252a2d;
+    transition:.3s;
+}
+
+.streetlight.powered .streetlight-lamp{
+    background:#fff7bd;
+    box-shadow:
+        0 0 12px 5px rgba(255,245,160,.8),
+        0 0 35px 12px rgba(255,225,90,.35);
+}
+
+/* ================= ROAD ================= */
+
+.road{
+    position:absolute;
+    top:300px;
+    left:0;
+    width:100%;
+    height:35px;
+    background:
+        repeating-linear-gradient(
+            120deg,
+            #34383a 0px,
+            #34383a 5px,
+            #2c3032 5px,
+            #2c3032 10px
+        );
+    border-top:3px solid #181b1c;
+    border-bottom:4px solid #111;
+    z-index:10;
+}
+
+/* road marking */
+
+.road-line{
+    position:absolute;
+    top:13px;
+    left:0;
+    width:100%;
+    height:3px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0,
+            transparent 60px,
+            #b7b9b9 60px,
+            #b7b9b9 120px
+        );
+    opacity:.65;
+}
+
+/* ================= HARVESTING MODULE ================= */
+
+.harvest-zone{
+    position:absolute;
+    top:292px;
+    left:42%;
+    width:250px;
+    height:50px;
+    border:2px dashed #f4a51c;
+    background:rgba(255,170,20,.05);
+    z-index:15;
+}
+
+.zone-label{
+    position:absolute;
+    top:274px;
+    left:42%;
+    width:250px;
+    text-align:center;
+    color:#ffb42a;
+    font-size:10px;
+    font-weight:bold;
+    z-index:20;
+}
+
+/* actual plate */
+
+.pressure-plate{
+    position:absolute;
+    top:294px;
+    left:42%;
+    width:250px;
+    height:14px;
+    background:
+        linear-gradient(
+            #777d80,
+            #303436
+        );
+    border:2px solid #17191a;
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.8);
+    z-index:18;
+    transition:transform .08s ease;
+}
+
+/* ================= CAR ================= */
+
+.car{
+    position:absolute;
+    width:230px;
+    height:100px;
+    top:215px;
+    left:-260px;
+    z-index:30;
+}
+
+.car-body{
+    position:absolute;
+    bottom:15px;
+    left:10px;
+    width:215px;
+    height:55px;
+    background:
+        linear-gradient(
+            180deg,
+            #697278,
+            #2d3337
+        );
+    border-radius:24px 35px 8px 8px;
+    border:2px solid #111;
+    box-shadow:0 7px 12px rgba(0,0,0,.6);
+}
+
+.car-roof{
+    position:absolute;
+    top:5px;
+    left:63px;
+    width:120px;
+    height:48px;
+    background:#3e474c;
+    border-radius:48px 48px 5px 5px;
+    border:2px solid #151719;
+}
+
+.window{
+    position:absolute;
+    top:8px;
+    height:31px;
+    background:
+        linear-gradient(
+            135deg,
+            #1d303b,
+            #0b161d
+        );
+    border:1px solid #687981;
+}
+
+.window.one{
+    left:10px;
+    width:46px;
+}
+
+.window.two{
+    left:60px;
+    width:48px;
+}
+
+.wheel{
+    position:absolute;
+    bottom:0;
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#090a0b;
+    border:7px solid #454b4f;
+    box-shadow:inset 0 0 0 5px #111;
+}
+
+.wheel.one{
+    left:35px;
+}
+
+.wheel.two{
+    right:25px;
+}
+
+/* ================= CUTAWAY ================= */
+
+.underground{
+    position:absolute;
+    top:335px;
+    left:0;
+    width:100%;
+    height:315px;
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            #60402c 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 70% 60%,
+            #4b3022 1px,
+            transparent 2px
+        ),
+        linear-gradient(
+            #291b11,
+            #100a06
+        );
+    background-size:35px 35px,45px 45px,100%;
+}
+
+/* concrete chamber */
+
+.chamber{
+    position:absolute;
+    top:0;
+    left:42%;
+    width:250px;
+    height:290px;
+    background:
+        linear-gradient(
+            90deg,
+            #171b1d,
+            #272c2f,
+            #151819
+        );
+    border-left:10px solid #090b0c;
+    border-right:10px solid #090b0c;
+    box-shadow:
+        inset 0 0 30px rgba(0,0,0,.8);
+}
+
+/* chamber roof */
+
+.chamber-roof{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:15px;
+    background:#080909;
+}
+
+/* ================= SPRINGS ================= */
+
+.spring{
+    position:absolute;
+    top:25px;
+    width:38px;
+    height:110px;
+    border-left:5px solid #aeb5b8;
+    border-right:5px solid #aeb5b8;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            transparent 0px,
+            transparent 6px,
+            #d5d8da 6px,
+            #d5d8da 11px,
+            transparent 11px,
+            transparent 18px
+        );
+    transition:height .08s;
+}
+
+.spring.one{
+    left:30px;
+}
+
+.spring.two{
+    right:30px;
+}
+
+/* ================= RACK ================= */
+
+.rack{
+    position:absolute;
+    left:111px;
+    top:23px;
+    width:25px;
+    height:155px;
+    background:
+        repeating-linear-gradient(
+            to bottom,
+            #d1d4d5 0,
+            #d1d4d5 8px,
+            #272a2c 8px,
+            #272a2c 15px
+        );
+    border:2px solid #101112;
+    z-index:4;
+    transition:transform .08s;
+}
+
+/* ================= GEARS ================= */
+
+.gear{
+    position:absolute;
+    border-radius:50%;
+    background:
+        radial-gradient(
+            circle,
+            #747b7e 0 12px,
+            #252a2c 13px 18px,
+            #636a6e 19px 29px,
+            #25292b 30px
+        );
+    border:5px solid #111314;
+    box-shadow:
+        0 0 0 5px #4d5356;
+    z-index:5;
+}
+
+.gear::after{
+    content:"";
+    position:absolute;
+    inset:-11px;
+    border-radius:50%;
+    border:8px dotted #686e72;
+}
+
+.gear.main{
+    width:80px;
+    height:80px;
+    left:76px;
+    top:120px;
+}
+
+.gear.secondary{
+    width:58px;
+    height:58px;
+    left:139px;
+    top:145px;
+}
+
+/* Only spins when activated */
+
+.gear.spin{
+    animation:gearSpin .45s linear infinite;
+}
+
+.gear.secondary.spin{
+    animation:gearSpinReverse .3s linear infinite;
+}
+
+@keyframes gearSpin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@keyframes gearSpinReverse{
+    to{
+        transform:rotate(-360deg);
+    }
+}
+
+/* ================= GENERATOR ================= */
+
+.generator{
+    position:absolute;
+    left:190px;
+    top:125px;
+    width:95px;
+    height:75px;
+    background:
+        linear-gradient(
+            90deg,
+            #171b1d,
+            #566066,
+            #171b1d
+        );
+    border:3px solid #101112;
+    border-radius:9px;
+    box-shadow:0 7px 12px #000;
+    z-index:6;
+}
+
+.generator-label{
+    position:absolute;
+    top:28px;
+    left:10px;
+    font-size:9px;
+    font-weight:bold;
+    color:#d0d5d7;
+}
+
+.generator-coil{
+    position:absolute;
+    right:10px;
+    top:15px;
+    width:28px;
+    height:43px;
+    border:3px solid #ff9f17;
+    border-radius:5px;
+}
+
+.generator.active{
+    box-shadow:
+        0 0 18px rgba(45,150,255,.8),
+        0 7px 12px #000;
+}
+
+/* ================= ELECTRICAL LINE ================= */
+
+.power-line{
+    position:absolute;
+    height:4px;
+    background:#176dca;
+    box-shadow:0 0 8px #268eff;
+    z-index:3;
+    opacity:.15;
+}
+
+.power-line.active{
+    opacity:1;
+    animation:energyFlow .4s linear infinite;
+}
+
+.line1{
+    left:282px;
+    top:161px;
+    width:65px;
+}
+
+.line2{
+    left:347px;
+    top:161px;
+    width:95px;
+}
+
+.line3{
+    left:442px;
+    top:161px;
+    width:130px;
+}
+
+@keyframes energyFlow{
+    0%{
+        filter:brightness(.8);
+    }
+    50%{
+        filter:brightness(2);
+    }
+    100%{
+        filter:brightness(.8);
+    }
+}
+
+/* ================= POWER CONDITIONING ================= */
+
+.conditioner{
+    position:absolute;
+    left:330px;
+    top:120px;
+    width:115px;
+    height:78px;
+    background:
+        linear-gradient(
+            #2b3337,
+            #111517
+        );
+    border:2px solid #5b666c;
+    border-radius:7px;
+    z-index:5;
+    padding:11px;
+}
+
+.conditioner-title{
+    font-size:9px;
+    font-weight:bold;
+}
+
+.conditioner-status{
+    margin-top:10px;
+    font-size:8px;
+    color:#68767d;
+}
+
+.conditioner.active .conditioner-status{
+    color:#39eb9a;
+}
+
+/* ================= BATTERY ================= */
+
+.battery-unit{
+    position:absolute;
+    left:460px;
+    top:120px;
+    width:115px;
+    height:80px;
+    background:#121719;
+    border:2px solid #505a60;
+    border-radius:7px;
+    z-index:5;
+    padding:10px;
+}
+
+.battery-title{
+    font-size:9px;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.battery-body{
+    height:21px;
+    border:2px solid #aeb4b7;
+    border-radius:4px;
+    padding:2px;
+}
+
+.battery-fill{
+    height:100%;
+    width:0%;
+    background:#31e28b;
+    box-shadow:0 0 8px #31e28b;
+    transition:width .3s;
+}
+
+/* ================= STREETLIGHT POWER CABLE ================= */
+
+.street-cable{
+    position:absolute;
+    bottom:45px;
+    left:10%;
+    width:80%;
+    height:3px;
+    background:#1b75c8;
+    opacity:.18;
+}
+
+.street-cable.active{
+    opacity:1;
+    box-shadow:0 0 8px #258fff;
+}
+
+/* ================= LABELS ================= */
+
+.component-label{
+    position:absolute;
+    color:#9ca7ad;
+    font-size:9px;
+}
+
+.spring-label{
+    top:145px;
+    left:45px;
+}
+
+.rack-label{
+    top:190px;
+    left:104px;
+}
+
+.gear-label{
+    top:213px;
+    left:74px;
+}
+
+.generator-label-out{
+    top:205px;
+    left:187px;
+}
+
+/* ================= DASHBOARD ================= */
+
+.dashboard{
+    background:#0c1115;
+    border:1px solid #29323a;
+    border-radius:10px;
+    padding:16px;
+}
+
+.dashboard h2{
+    margin:0 0 15px;
+    font-size:17px;
+}
+
+.metric{
+    background:#11181d;
+    border:1px solid #263138;
+    border-radius:7px;
+    padding:10px;
+    margin-bottom:8px;
+}
+
+.metric-name{
+    color:#78868f;
+    font-size:9px;
+    text-transform:uppercase;
+}
+
+.metric-value{
+    margin-top:4px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.orange{
+    color:#ffad22;
+}
+
+.green{
+    color:#38e895;
+}
+
+.blue{
+    color:#52aaff;
+}
+
+/* ================= CONTROLS ================= */
+
+.controls{
+    margin-top:12px;
+    background:#11181d;
+    border:1px solid #29343b;
+    border-radius:7px;
+    padding:12px;
+}
+
+.controls h3{
+    font-size:12px;
+    margin:0 0 12px;
+}
+
+.control{
+    margin-bottom:12px;
+}
+
+.control label{
+    display:flex;
+    justify-content:space-between;
+    color:#87949b;
+    font-size:10px;
+}
+
+input[type=range]{
+    width:100%;
+}
+
+.buttons{
+    display:flex;
+    gap:6px;
+}
+
+button{
+    flex:1;
+    padding:9px;
+    border:0;
+    border-radius:5px;
+    color:white;
+    font-weight:bold;
+    font-size:10px;
+}
+
+.start{
+    background:#008e59;
+}
+
+.stop{
+    background:#9e2929;
+}
+
+.reset{
+    background:#3c464c;
+}
+
+/* ================= FLOW ================= */
+
+.flow{
+    position:absolute;
+    bottom:8px;
+    left:15px;
+    right:15px;
+    height:30px;
+    background:#080b0d;
+    border:1px solid #2b343a;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:9px;
+    font-size:8px;
+    color:#a9b2b6;
+}
+
+.arrow{
+    color:#ffac20;
+    font-size:13px;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:1000px){
+
+    .container{
+        grid-template-columns:1fr;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <div class="logo">
+        INNOVEXA <span>| SMART ROAD ENERGY</span>
+    </div>
+
+    <div class="system-status" id="status">
+        <div class="status-dot"></div>
+        SYSTEM STANDBY
+    </div>
+
+</header>
+
+
+<div class="container">
+
+<!-- ================= MAIN SIMULATION ================= -->
+
+<section class="simulation">
+
+    <div class="sim-title">
+        <h2>Smart Road Energy Harvesting — Engineering Simulation</h2>
+
+        <p>
+            Vehicle pressure activates the underground mechanical generator
+        </p>
+    </div>
+
+
+    <div class="scene" id="scene">
+
+        <!-- Background -->
+        <div class="background-building b1"></div>
+        <div class="background-building b2"></div>
+        <div class="background-building b3"></div>
+        <div class="background-building b4"></div>
+
+
+        <!-- STREETLIGHTS -->
+
+        <div class="streetlight left">
+            <div class="streetlight-head">
+                <div class="streetlight-lamp"></div>
+            </div>
+        </div>
+
+        <div class="streetlight right">
+            <div class="streetlight-head">
+                <div class="streetlight-lamp"></div>
+            </div>
+        </div>
+
+
+        <!-- ROAD -->
+
+        <div class="road">
+            <div class="road-line"></div>
+        </div>
+
+
+        <!-- HARVESTING AREA -->
+
+        <div class="zone-label">
+            VEHICLE ENERGY HARVESTING MODULE
+        </div>
+
+        <div class="harvest-zone"></div>
+
+        <div
+            class="pressure-plate"
+            id="plate">
+        </div>
+
+
+        <!-- VEHICLE -->
+
+        <div
+            class="car"
+            id="car">
+
+            <div class="car-body"></div>
+
+            <div class="car-roof">
+
+                <div class="window one"></div>
+                <div class="window two"></div>
+
+            </div>
+
+            <div class="wheel one"></div>
+            <div class="wheel two"></div>
+
+        </div>
+
+
+        <!-- UNDER ROAD -->
+
+        <div class="underground">
+
+            <div class="chamber">
+
+                <div class="chamber-roof"></div>
+
+
+                <!-- SPRINGS -->
+
+                <div
+                    class="spring one"
+                    id="spring1">
+                </div>
+
+                <div
+                    class="spring two"
+                    id="spring2">
+                </div>
+
+
+                <!-- RACK -->
+
+                <div
+                    class="rack"
+                    id="rack">
+                </div>
+
+
+                <!-- GEARS -->
+
+                <div
+                    class="gear main"
+                    id="gear1">
+                </div>
+
+                <div
+                    class="gear secondary"
+                    id="gear2">
+                </div>
+
+
+                <!-- GENERATOR -->
+
+                <div
+                    class="generator"
+                    id="generator">
+
+                    <div class="generator-coil"></div>
+
+                    <div class="generator-label">
+                        GENERATOR
+                    </div>
+
+                </div>
+
+
+                <!-- POWER CONDITIONING -->
+
+                <div
+                    class="conditioner"
+                    id="conditioner">
+
+                    <div class="conditioner-title">
+                        POWER CONDITIONING
+                    </div>
+
+                    <div class="conditioner-status">
+                        RECTIFIER / REGULATOR
+                    </div>
+
+                </div>
+
+
+                <!-- BATTERY -->
+
+                <div class="battery-unit">
+
+                    <div class="battery-title">
+                        ENERGY STORAGE
+                    </div>
+
+                    <div class="battery-body">
+
+                        <div
+                            class="battery-fill"
+                            id="battery">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ELECTRICAL CONNECTION -->
+
+                <div
+                    class="power-line line1"
+                    id="line1">
+                </div>
+
+                <div
+                    class="power-line line2"
+                    id="line2">
+                </div>
+
+                <div
+                    class="power-line line3"
+                    id="line3">
+                </div>
+
+
+                <!-- LABELS -->
+
+                <div class="component-label spring-label">
+                    RETURN SPRINGS
+                </div>
+
+                <div class="component-label rack-label">
+                    RACK
+                </div>
+
+                <div class="component-label gear-label">
+                    GEAR TRANSMISSION
+                </div>
+
+                <div class="component-label generator-label-out">
+                    GENERATOR
+                </div>
+
+            </div>
+
+
+            <!-- STREETLIGHT DISTRIBUTION CABLE -->
+
+            <div
+                class="street-cable"
+                id="streetCable">
+            </div>
+
+        </div>
+
+
+        <!-- PROCESS FLOW -->
+
+        <div class="flow">
+
+            VEHICLE LOAD
+            <span class="arrow">→</span>
+
+            PRESSURE PLATE
+            <span class="arrow">→</span>
+
+            RACK
+            <span class="arrow">→</span>
+
+            GEARS
+            <span class="arrow">→</span>
+
+            GENERATOR
+            <span class="arrow">→</span>
+
+            POWER CONDITIONING
+            <span class="arrow">→</span>
+
+            STREETLIGHT
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DASHBOARD ================= -->
+
+<aside class="dashboard">
+
+    <h2>⚡ Live Energy System</h2>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Vehicle Load
+        </div>
+
+        <div
+            class="metric-value orange"
+            id="load">
+            0 N
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Pressure Plate Displacement
+        </div>
+
+        <div
+            class="metric-value"
+            id="displacement">
+            0.0 mm
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Gear / Generator RPM
+        </div>
+
+        <div
+            class="metric-value"
+            id="rpm">
+            0 RPM
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Generator Voltage
+        </div>
+
+        <div
+            class="metric-value blue"
+            id="voltage">
+            0.00 V
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Generator Current
+        </div>
+
+        <div
+            class="metric-value blue"
+            id="current">
+            0.00 A
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Generated Power
+        </div>
+
+        <div
+            class="metric-value green"
+            id="power">
+            0.00 W
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Total Energy
+        </div>
+
+        <div
+            class="metric-value green"
+            id="energy">
+            0.000 Wh
+        </div>
+
+    </div>
+
+
+    <div class="metric">
+
+        <div class="metric-name">
+            Vehicles Passed
+        </div>
+
+        <div
+            class="metric-value"
+            id="vehicles">
+            0
+        </div>
+
+    </div>
+
+
+    <div class="controls">
+
+        <h3>Simulation Controls</h3>
+
+
+        <div class="control">
+
+            <label>
+                <span>Vehicle Weight</span>
+
+                <span id="weightText">
+                    1500 kg
+                </span>
+            </label>
+
+            <input
+                type="range"
+                id="weight"
+                min="500"
+                max="5000"
+                value="1500">
+
+        </div>
+
+
+        <div class="control">
+
+            <label>
+                <span>Vehicle Speed</span>
+
+                <span id="speedText">
+                    Medium
+                </span>
+            </label>
+
+            <input
+                type="range"
+                id="speed"
+                min="1"
+                max="5"
+                value="3">
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                class="start"
+                onclick="startSimulation()">
+                ▶ START
+            </button>
+
+            <button
+                class="stop"
+                onclick="stopSimulation()">
+                ■ STOP
+            </button>
+
+            <button
+                class="reset"
+                onclick="resetSimulation()">
+                ↻ RESET
+            </button>
+
+        </div>
+
+    </div>
+
+</aside>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let running = false;
+
+let carX = -260;
+
+let vehicleCount = 0;
+
+let totalEnergy = 0;
+
+let insideZone = false;
+
+let animationFrame;
+
+let weight = 1500;
+
+let speed = 3;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const scene =
+    document.getElementById("scene");
+
+const car =
+    document.getElementById("car");
+
+const plate =
+    document.getElementById("plate");
+
+const rack =
+    document.getElementById("rack");
+
+const spring1 =
+    document.getElementById("spring1");
+
+const spring2 =
+    document.getElementById("spring2");
+
+const gear1 =
+    document.getElementById("gear1");
+
+const gear2 =
+    document.getElementById("gear2");
+
+const generator =
+    document.getElementById("generator");
+
+const conditioner =
+    document.getElementById("conditioner");
+
+const line1 =
+    document.getElementById("line1");
+
+const line2 =
+    document.getElementById("line2");
+
+const line3 =
+    document.getElementById("line3");
+
+const streetCable =
+    document.getElementById("streetCable");
+
+const battery =
+    document.getElementById("battery");
+
+const streetlights =
+    document.querySelectorAll(".streetlight");
+
+const status =
+    document.getElementById("status");
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+document
+.getElementById("weight")
+.addEventListener("input", function(){
+
+    weight =
+        Number(this.value);
+
+    document
+    .getElementById("weightText")
+    .innerText =
+        weight + " kg";
+
+});
+
+
+document
+.getElementById("speed")
+.addEventListener("input", function(){
+
+    speed =
+        Number(this.value);
+
+    const names = [
+        "",
+        "Very Slow",
+        "Slow",
+        "Medium",
+        "Fast",
+        "Very Fast"
+    ];
+
+    document
+    .getElementById("speedText")
+    .innerText =
+        names[speed];
+
+});
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startSimulation(){
+
+    if(running)
+        return;
+
+    running = true;
+
+    status.classList.add("active-status");
+
+    status.innerHTML =
+        '<div class="status-dot"></div> SYSTEM ACTIVE';
+
+    animate();
+
+}
+
+
+/* =========================================================
+   STOP
+========================================================= */
+
+function stopSimulation(){
+
+    running = false;
+
+    cancelAnimationFrame(animationFrame);
+
+    deactivateSystem();
+
+    status.classList.remove("active-status");
+
+    status.innerHTML =
+        '<div class="status-dot"></div> SYSTEM STANDBY';
+
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetSimulation(){
+
+    running = false;
+
+    cancelAnimationFrame(animationFrame);
+
+    carX = -260;
+
+    vehicleCount = 0;
+
+    totalEnergy = 0;
+
+    insideZone = false;
+
+    car.style.left =
+        carX + "px";
+
+    deactivateSystem();
+
+    document
+    .getElementById("vehicles")
+    .innerText = "0";
+
+    updateDashboard(
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+    );
+
+    battery.style.width =
+        "0%";
+
+    status.classList.remove("active-status");
+
+    status.innerHTML =
+        '<div class="status-dot"></div> SYSTEM STANDBY';
+
+}
+
+
+/* =========================================================
+   MAIN ANIMATION
+========================================================= */
+
+function animate(){
+
+    if(!running)
+        return;
+
+
+    /* Move vehicle */
+
+    carX +=
+        speed * 1.2;
+
+    car.style.left =
+        carX + "px";
+
+
+    const width =
+        scene.clientWidth;
+
+
+    /*
+       HARVESTING MODULE POSITION
+
+       It occupies the same section as
+       the pressure plate.
+    */
+
+    const zoneStart =
+        width * 0.42;
+
+    const zoneEnd =
+        zoneStart + 250;
+
+
+    /*
+       Check the actual wheel/contact
+       area rather than simply checking
+       whether the whole car is nearby.
+    */
+
+    const frontWheel =
+        carX + 180;
+
+    const rearWheel =
+        carX + 55;
+
+
+    const frontOnPlate =
+        frontWheel > zoneStart &&
+        frontWheel < zoneEnd;
+
+    const rearOnPlate =
+        rearWheel > zoneStart &&
+        rearWheel < zoneEnd;
+
+
+    /*
+       THE SYSTEM GENERATES POWER ONLY
+       WHEN A WHEEL IS ACTUALLY PRESSING
+       THE HARVESTING PLATE.
+    */
+
+    const vehiclePressingPlate =
+        frontOnPlate || rearOnPlate;
+
+
+    if(vehiclePressingPlate){
+
+        activateSystem();
+
+        if(!insideZone){
+
+            vehicleCount++;
+
+            document
+            .getElementById("vehicles")
+            .innerText =
+                vehicleCount;
+
+            insideZone = true;
+
+        }
+
+        generateElectricity();
+
+    }
+    else{
+
+        deactivateSystem();
+
+        insideZone = false;
+
+    }
+
+
+    /* Reset vehicle */
+
+    if(carX > width + 50){
+
+        carX = -260;
+
+    }
+
+
+    animationFrame =
+        requestAnimationFrame(animate);
+
+}
+
+
+/* =========================================================
+   ACTIVATE MECHANICAL SYSTEM
+========================================================= */
+
+function activateSystem(){
+
+    /*
+       Plate compression
+
+       Heavier vehicle
+       -> greater downward movement
+    */
+
+    const compression =
+        Math.min(
+            25,
+            5 + weight / 300
+        );
+
+
+    /* Pressure plate moves DOWN */
+
+    plate.style.transform =
+        `translateY(${compression}px)`;
+
+
+    /*
+       Rack moves DOWN
+
+       This is the mechanical input
+       that drives the gear.
+    */
+
+    rack.style.transform =
+        `translateY(${compression}px)`;
+
+
+    /*
+       Springs compress
+    */
+
+    const springHeight =
+        Math.max(
+            55,
+            110 - compression * 2
+        );
+
+    spring1.style.height =
+        springHeight + "px";
+
+    spring2.style.height =
+        springHeight + "px";
+
+
+    /*
+       GEARS START ROTATING ONLY NOW
+    */
+
+    gear1.classList.add("spin");
+
+    gear2.classList.add("spin");
+
+
+    /*
+       Generator becomes active
+    */
+
+    generator.classList.add("active");
+
+
+    /*
+       Electrical system activates
+    */
+
+    conditioner.classList.add("active");
+
+    line1.classList.add("active");
+    line2.classList.add("active");
+    line3.classList.add("active");
+
+    streetCable.classList.add("active");
+
+
+    /*
+       Streetlights receive power
+    */
+
+    streetlights.forEach(light => {
+
+        light.classList.add("powered");
+
+    });
+
+}
+
+
+/* =========================================================
+   DEACTIVATE SYSTEM
+========================================================= */
+
+function deactivateSystem(){
+
+    plate.style.transform =
+        "translateY(0px)";
+
+    rack.style.transform =
+        "translateY(0px)";
+
+    spring1.style.height =
+        "110px";
+
+    spring2.style.height =
+        "110px";
+
+
+    /*
+       GEARS STOP
+    */
+
+    gear1.classList.remove("spin");
+
+    gear2.classList.remove("spin");
+
+
+    /*
+       GENERATOR STOPS
+    */
+
+    generator.classList.remove("active");
+
+
+    /*
+       POWER LINE OFF
+    */
+
+    conditioner.classList.remove("active");
+
+    line1.classList.remove("active");
+    line2.classList.remove("active");
+    line3.classList.remove("active");
+
+    streetCable.classList.remove("active");
+
+
+    /*
+       STREETLIGHTS OFF
+
+       Battery retains previously
+       harvested energy visually.
+    */
+
+    streetlights.forEach(light => {
+
+        light.classList.remove("powered");
+
+    });
+
+}
+
+
+/* =========================================================
+   ELECTRICITY GENERATION
+========================================================= */
+
+function generateElectricity(){
+
+    /*
+       Vehicle force
+    */
+
+    const force =
+        weight * 9.81;
+
+
+    /*
+       Mechanical displacement
+    */
+
+    const plateDisplacement =
+        Math.min(
+            25,
+            5 + weight / 300
+        );
+
+
+    /*
+       Generator speed
+
+       Heavier load -> greater
+       simulated mechanical input.
+    */
+
+    const generatorRPM =
+        Math.round(
+            250 +
+            weight / 6
+        );
+
+
+    /*
+       Simulated generator output
+    */
+
+    const generatedVoltage =
+        6 +
+        weight / 450;
+
+
+    const generatedCurrent =
+        0.10 +
+        weight / 4000;
+
+
+    const generatedPower =
+        generatedVoltage *
+        generatedCurrent;
+
+
+    /*
+       Accumulate harvested energy
+    */
+
+    totalEnergy +=
+        generatedPower *
+        0.0000025;
+
+
+    updateDashboard(
+        force,
+        plateDisplacement,
+        generatorRPM,
+        generatedVoltage,
+        generatedCurrent,
+        generatedPower
+    );
+
+
+    /*
+       Charge battery
+
+       This is visualized as the storage
+       level increasing.
+    */
+
+    const batteryPercentage =
+        Math.min(
+            100,
+            totalEnergy * 850
+        );
+
+
+    battery.style.width =
+        batteryPercentage + "%";
+
+}
+
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function updateDashboard(
+    force,
+    plateDisplacement,
+    generatorRPM,
+    generatedVoltage,
+    generatedCurrent,
+    generatedPower
+){
+
+    document
+    .getElementById("load")
+    .innerText =
+        Math.round(force) + " N";
+
+
+    document
+    .getElementById("displacement")
+    .innerText =
+        plateDisplacement.toFixed(1) +
+        " mm";
+
+
+    document
+    .getElementById("rpm")
+    .innerText =
+        generatorRPM +
+        " RPM";
+
+
+    document
+    .getElementById("voltage")
+    .innerText =
+        generatedVoltage.toFixed(2) +
+        " V";
+
+
+    document
+    .getElementById("current")
+    .innerText =
+        generatedCurrent.toFixed(2) +
+        " A";
+
+
+    document
+    .getElementById("power")
+    .innerText =
+        generatedPower.toFixed(2) +
+        " W";
+
+
+    document
+    .getElementById("energy")
+    .innerText =
+        totalEnergy.toFixed(3) +
+        " Wh";
+
+}
+
+</script>
+
+</body>
+</html>
