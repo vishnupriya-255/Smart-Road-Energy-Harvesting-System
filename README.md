@@ -15,6 +15,7 @@ Vehicle Movement → Pressure Plate → Mechanical Energy Conversion → Electri
 * Real-time voltage monitoring
 * Energy storage monitoring
 * Pressure event tracking
+* Piezoelectric system monitoring
 * System health and diagnostics
 * Interactive monitoring dashboard
 
@@ -33,6 +34,7 @@ Vehicle Movement → Pressure Plate → Mechanical Energy Conversion → Electri
 * JavaScript
 * Chart.js
 * Mechanical energy conversion prototype
+* Piezoelectric energy monitoring
 
 ## Future Scope
 
@@ -43,7 +45,11 @@ The system can be extended with a physical prototype, real traffic testing, IoT 
 **Team Innovexa**
 Smart India Hackathon 2026
 
+## Project Links
+
+**Software Simulation:**
 https://vishnupriya-255.github.io/Smart-Road-Energy-Harvesting-System/
 
+**Piezoelectric Monitoring Dashboard:**
 https://himasree24.github.io/SIH/
 
